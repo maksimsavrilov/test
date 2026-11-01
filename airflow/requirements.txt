@@ -1,0 +1,5 @@
+# Astro Runtime includes the following pre-installed providers packages: https://www.astronomer.io/docs/astro/runtime-image-architecture#provider-packages
+-e ..
+psycopg[binary]>=3.3.6
+pydantic>=2
+sqlalchemy>=2
