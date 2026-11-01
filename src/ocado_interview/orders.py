@@ -6,7 +6,7 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.dialects.postgresql import ENUM as pgEnum
 from pydantic import BaseModel, field_validator
 from datetime import datetime
-
+import re
 
 class Base(DeclarativeBase):
     pass
@@ -41,26 +41,16 @@ class Order(BaseModel):
 
     @field_validator('currency')
     def check_currency(cls, value):
-        if len(value) != 3:
+        if not re.match(r'^[A-Z]{3}$', value):
             raise ValueError('Currency must be a 3-letter code')
         return value
 
     @field_validator('status')
     def check_status(cls, value):
-        valid_statuses = ['pending', 'completed', 'cancelled']
-        if value not in valid_statuses:
-            raise ValueError(f'Status must be one of {valid_statuses}')
+        if value not in OrderStatus.__members__:
+            raise ValueError(f'Status must be one of {OrderStatus.__members__.keys()}')
         return value
 
-    # @field_validator('created_at')
-    # def check_created_at(cls, value):
-    #     # Here you can add validation for the created_at field, e.g., check if it's a valid datetime string
-    #     # For example, you could use datetime.strptime(value, '%Y-%m-%dT%H:%M:%S')
-    #     try:
-    #         datetime.strptime(value, '%Y-%m-%dT%H:%M:%S%z')
-    #     except ValueError:
-    #         raise ValueError('created_at must be a valid datetime string in the format YYYY-MM-DDTHH:MM:SS')
-    #     return value
 
 class OrderStatus(str, Enum):
     pending = 'pending'

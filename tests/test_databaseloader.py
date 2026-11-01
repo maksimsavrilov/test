@@ -1,16 +1,18 @@
 import json
 import os
 from collections.abc import Iterator
+from decimal import Decimal
 from pathlib import Path
 from uuid import uuid4
 
 import pytest
 from sqlalchemy import create_engine, delete, func, select
 from sqlalchemy.engine import Engine
+from sqlalchemy.exc import DataError
 
 from ocado_interview.databaseloader import DatabaseLoader
 from ocado_interview.filereader import FileReader
-from ocado_interview.orders import Base, OrderModel
+from ocado_interview.orders import Base, Order, OrderModel
 
 
 @pytest.fixture
@@ -94,3 +96,37 @@ def test_second_run_does_not_increase_order_count(database_engine, orders_file):
 
     assert count_after_first_run == 2
     assert count_orders(database_engine, order_ids) == count_after_first_run
+
+
+def test_failed_batch_of_50_orders_leaves_no_records(database_engine):
+    order_ids = [f"test-{uuid4().hex}" for _ in range(50)]
+    orders = [
+        Order(
+            order_id=order_id,
+            customer_id=index + 1,
+            amount=Decimal("10.00"),
+            currency="GBP",
+            status="pending",
+            created_at="2026-10-30T10:15:00Z",
+        )
+        for index, order_id in enumerate(order_ids)
+    ]
+    orders[-1] = Order.model_construct(
+        order_id=order_ids[-1],
+        customer_id=50,
+        amount=orders[-1].amount,
+        currency="GBPX",
+        status="pending",
+        created_at=orders[-1].created_at,
+    )
+
+    try:
+        with pytest.raises(DataError):
+            DatabaseLoader(database_engine).insert_orders(orders)
+
+        assert count_orders(database_engine, order_ids) == 0
+    finally:
+        with database_engine.begin() as connection:
+            connection.execute(
+                delete(OrderModel).where(OrderModel.order_id.in_(order_ids))
+            )
