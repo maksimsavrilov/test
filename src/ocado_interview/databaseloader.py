@@ -1,27 +1,15 @@
-
-from src.ocado_interview.orders import Order, OrderModel
+from ocado_interview.orders import Order, OrderModel
+from sqlalchemy.dialects.postgresql import insert
 
 class DatabaseLoader:
     def __init__(self, engine):
         self.engine = engine
 
     def insert_orders(self, orders: list[Order]):
-        with self.engine.connect() as connection:
-            for order in orders:
-                print(f"Inserting order: {order}")
-                print(repr(order))
-                try:
-                    connection.execute(
-                        OrderModel.__table__.insert(),
-                        {
-                            "order_id": order.order_id,
-                            "customer_id": order.customer_id,
-                            "amount": order.amount,
-                            "currency": order.currency,
-                            "status": order.status,
-                            "created_at": order.created_at
-                        }
-                    )
-                    connection.commit()
-                except Exception as e:
-                    print(f"Error inserting order {order.order_id}: {e}")
+        stmt = insert(OrderModel).values([order.model_dump() for order in orders])
+
+        stmt = stmt.on_conflict_do_nothing(
+            index_elements=["order_id"]
+        )
+        with self.engine.begin() as connection:
+            connection.execute(stmt)

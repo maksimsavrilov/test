@@ -17,7 +17,7 @@ class Order(BaseModel):
     amount: Decimal
     currency: str
     status: str
-    created_at: str
+    created_at: datetime
 
     @field_validator('order_id')
     def check_order_id(cls, value):
@@ -52,25 +52,15 @@ class Order(BaseModel):
             raise ValueError(f'Status must be one of {valid_statuses}')
         return value
 
-    @field_validator('created_at')
-    def check_created_at(cls, value):
-        # Here you can add validation for the created_at field, e.g., check if it's a valid datetime string
-        # For example, you could use datetime.strptime(value, '%Y-%m-%dT%H:%M:%S')
-        try:
-            datetime.strptime(value, '%Y-%m-%dT%H:%M:%S%z')
-        except ValueError:
-            raise ValueError('created_at must be a valid datetime string in the format YYYY-MM-DDTHH:MM:SS')
-        return value
-
-class Orders(BaseModel):
-    orders_list: List[Order]
-
-    def add_order(self, order: Order):
-        self.orders_list.append(order)
-
-    def get_orders(self) -> List[Order]:
-        return self.orders_list
-
+    # @field_validator('created_at')
+    # def check_created_at(cls, value):
+    #     # Here you can add validation for the created_at field, e.g., check if it's a valid datetime string
+    #     # For example, you could use datetime.strptime(value, '%Y-%m-%dT%H:%M:%S')
+    #     try:
+    #         datetime.strptime(value, '%Y-%m-%dT%H:%M:%S%z')
+    #     except ValueError:
+    #         raise ValueError('created_at must be a valid datetime string in the format YYYY-MM-DDTHH:MM:SS')
+    #     return value
 
 class OrderStatus(str, Enum):
     pending = 'pending'
@@ -93,4 +83,4 @@ class OrderModel(Base):
     amount: Mapped[Decimal] = mapped_column(CheckConstraint("amount > 0", name="check_amount_positive"))
     currency: Mapped[str] = mapped_column()
     status: Mapped[OrderStatus] = mapped_column(OrderStatusType)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=False))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
