@@ -20,7 +20,6 @@ class FileReader:
             try:
                 self.orders.append(Order.model_validate(order))
             except ValueError as e:
-                print(f"Validation error for order {order}: {e}")
                 self.dlq.append(order)
 
 

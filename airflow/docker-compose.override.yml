@@ -2,7 +2,7 @@
 services:
   scheduler:
     environment:
-      DATABASE_URL: postgresql+psycopg://ocado:ocado-dev@db:5432/orders
+      ORDERS_DATABASE_URL: postgresql+psycopg://ocado:ocado-dev@db:5432/orders
     volumes:
       - ../src/ocado_interview:/usr/local/airflow/include/ocado_interview:ro,z
       - ../data:/usr/local/airflow/include/data:z
@@ -12,7 +12,7 @@ services:
 
   dag-processor:
     environment:
-      DATABASE_URL: postgresql+psycopg://ocado:ocado-dev@db:5432/orders
+      ORDERS_DATABASE_URL: postgresql+psycopg://ocado:ocado-dev@db:5432/orders
     volumes:
       - ../src/ocado_interview:/usr/local/airflow/include/ocado_interview:ro,z
       - ../data:/usr/local/airflow/include/data:z
@@ -22,7 +22,7 @@ services:
 
   api-server:
     environment:
-      DATABASE_URL: postgresql+psycopg://ocado:ocado-dev@db:5432/orders
+      ORDERS_DATABASE_URL: postgresql+psycopg://ocado:ocado-dev@db:5432/orders
     volumes:
       - ../src/ocado_interview:/usr/local/airflow/include/ocado_interview:ro,z
       - ../data:/usr/local/airflow/include/data:z
@@ -32,7 +32,7 @@ services:
 
   triggerer:
     environment:
-      DATABASE_URL: postgresql+psycopg://ocado:ocado-dev@db:5432/orders
+      ORDERS_DATABASE_URL: postgresql+psycopg://ocado:ocado-dev@db:5432/orders
     volumes:
       - ../src/ocado_interview:/usr/local/airflow/include/ocado_interview:ro,z
       - ../data:/usr/local/airflow/include/data:z
