@@ -32,7 +32,7 @@ class FileReader:
                 self.dlq.append(order)
 
 
-        print(f"Valid orders: {self.orders}")
-        print(f"Invalid orders (DLQ): {self.dlq}")
+        print(f"Valid orders: {len(self.orders)}")
+        print(f"Invalid orders: {len(self.dlq)}")
         return self.orders, self.dlq
 

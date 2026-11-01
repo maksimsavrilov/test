@@ -12,4 +12,6 @@ class DatabaseLoader:
             index_elements=["order_id"]
         )
         with self.engine.begin() as connection:
-            connection.execute(stmt)
+            result = connection.execute(stmt)
+            return result.rowcount
+            
