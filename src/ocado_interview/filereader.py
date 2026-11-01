@@ -12,21 +12,13 @@ class FileReader:
             return json.load(file)
 
     def get_orders(self) -> tuple[list[Order], list]:
-
-        try:
-           contents = self.read_source()
-        except json.JSONDecodeError as e:
-            print(f"Error reading source file: {e}")
-            return [], []
-        # print(f"Contents of the file: {contents}")
-
+        contents = self.read_source()
 
         self.dlq = list()
         self.orders = list()
         for order in contents:
             try:
                 self.orders.append(Order.model_validate(order))
-
             except ValueError as e:
                 print(f"Validation error for order {order}: {e}")
                 self.dlq.append(order)
