@@ -1,0 +1,18 @@
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: ocado-postgres
+    environment:
+      - POSTGRES_USER=ocado
+      - POSTGRES_PASSWORD=ocado-dev
+      - POSTGRES_DB=orders
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - ocado-postgres-data:/var/lib/postgresql/data:Z
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:Z
+    restart: unless-stopped
+
+volumes:
+  ocado-postgres-data:
+    external: true

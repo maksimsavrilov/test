@@ -1,0 +1,22 @@
+[project]
+name = "ocado-interview"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Maksim Savrilov", email = "maxim.savrilov@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "psycopg[binary]>=3.3.6",
+    "pydantic>=2",
+    "pytest>=9.2.0",
+    "sqlalchemy>=2.1.6",
+]
+
+[project.scripts]
+ocado-interview = "ocado_interview:main"
+
+[build-system]
+requires = ["uv_build>=0.12.5,<0.13.0"]
+build-backend = "uv_build"
