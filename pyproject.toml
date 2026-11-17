@@ -8,6 +8,7 @@ authors = [
 ]
 requires-python = ">=3.13"
 dependencies = [
+    "psycopg2-binary>=2.9.13",
     "psycopg[binary]>=3.3.6",
     "pydantic>=2",
     "pytest>=9.2.0",
@@ -20,3 +21,8 @@ ocado-interview = "ocado_interview:main"
 [build-system]
 requires = ["uv_build>=0.12.5,<0.13.0"]
 build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "faker>=40.52.0",
+]

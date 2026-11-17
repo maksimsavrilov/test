@@ -1,0 +1,108 @@
+name: flink-orders-lab
+
+services:
+  redpanda:
+    image: docker.io/redpandadata/redpanda:v26.2.7
+    container_name: flink-lab-redpanda
+    command:
+      - redpanda
+      - start
+      - --mode
+      - dev-container
+      - --smp
+      - "1"
+      - --memory
+      - "1G"
+      - --overprovisioned
+      - --kafka-addr
+      - internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr
+      - internal://redpanda:9092,external://localhost:19092
+    ports:
+      - "19092:19092"
+      - "18081:8081"
+      - "19644:9644"
+    volumes:
+      - redpanda-data:/var/lib/redpanda/data
+    networks:
+      - streaming
+
+  console:
+    image: docker.io/redpandadata/console:v3.14.0
+    container_name: flink-lab-console
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        echo "$$CONSOLE_CONFIG_FILE" > /tmp/config.yml
+        /app/console
+    environment:
+      CONFIG_FILEPATH: /tmp/config.yml
+      CONSOLE_CONFIG_FILE: |
+        kafka:
+          brokers: ["redpanda:9092"]
+        schemaRegistry:
+          enabled: true
+          urls: ["http://redpanda:8081"]
+        redpanda:
+          adminApi:
+            enabled: true
+            urls: ["http://redpanda:9644"]
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redpanda
+    networks:
+      - streaming
+
+  jobmanager:
+    build:
+      context: ./flink
+      dockerfile: Dockerfile
+    image: flink-py:2.2.1
+    container_name: flink-lab-jobmanager
+    command: jobmanager
+    ports:
+      - "8081:8081"
+    environment:
+      FLINK_PROPERTIES: |
+        jobmanager.rpc.address: jobmanager
+        jobmanager.memory.process.size: 1024m
+        parallelism.default: 1
+        state.checkpoints.dir: file:///opt/flink/checkpoints
+        python.client.executable: python
+        python.executable: python
+    volumes:
+      - ./flink/jobs:/opt/flink/jobs:ro
+      - flink-checkpoints:/opt/flink/checkpoints
+    networks:
+      - streaming
+
+  taskmanager:
+    image: flink-py:2.2.1
+    container_name: flink-lab-taskmanager
+    command: taskmanager
+    depends_on:
+      - jobmanager
+    environment:
+      FLINK_PROPERTIES: |
+        jobmanager.rpc.address: jobmanager
+        taskmanager.numberOfTaskSlots: 2
+        taskmanager.memory.process.size: 2048m
+        parallelism.default: 1
+        state.checkpoints.dir: file:///opt/flink/checkpoints
+        python.executable: python
+    volumes:
+      - ./flink/jobs:/opt/flink/jobs:ro
+      - flink-checkpoints:/opt/flink/checkpoints
+    networks:
+      - streaming
+
+volumes:
+  redpanda-data:
+  flink-checkpoints:
+
+networks:
+  streaming:
+    driver: bridge
+

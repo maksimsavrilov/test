@@ -127,6 +127,7 @@ def orders_pipeline():
             for record in payload["orders"]
         ]
 
+        inserted_count = 0
         if orders:
             database_url = os.getenv(
                 "ORDERS_DATABASE_URL",
@@ -140,13 +141,14 @@ def orders_pipeline():
 
             try:
                 loader = DatabaseLoader(engine)
-                loader.insert_orders(orders)
+                inserted_count = loader.insert_orders(orders)
             finally:
                 engine.dispose()
 
         result = {
             **metadata,
             "submitted_count": len(orders),
+            "inserted_count": inserted_count,
             "load_status": "success",
         }
 

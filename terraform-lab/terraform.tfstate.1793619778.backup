@@ -1,0 +1,226 @@
+{
+  "version": 4,
+  "terraform_version": "1.17.1",
+  "serial": 24,
+  "lineage": "3671696c-2be7-c12c-d632-d1bf56b0b994",
+  "outputs": {
+    "container_id": {
+      "value": "f2aa0098c64d85122cc06d07d84972c34a391f142d1815da706e2693bafadf3e",
+      "type": "string"
+    },
+    "container_name": {
+      "value": "terraform-postgres",
+      "type": "string"
+    },
+    "postgres_connection": {
+      "value": "postgresql://ocado:\u003cpassword\u003e@localhost:5433/orders",
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "mode": "managed",
+      "type": "docker_image",
+      "name": "postgres",
+      "provider": "provider[\"registry.terraform.io/kreuzwerker/docker\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "build": [],
+            "force_remove": null,
+            "id": "sha256:1bea307dfb3ee30541a7acf7de14b58bcd6948da98e5d31a04c627c4d35ec64bpostgres:17-alpine",
+            "image_id": "sha256:1bea307dfb3ee30541a7acf7de14b58bcd6948da98e5d31a04c627c4d35ec64b",
+            "keep_locally": true,
+            "name": "postgres:17-alpine",
+            "platform": null,
+            "pull_triggers": null,
+            "repo_digest": "docker.io/library/postgres@sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73",
+            "timeouts": null,
+            "triggers": null
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH19"
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "docker_network",
+      "name": "backend",
+      "provider": "provider[\"registry.terraform.io/kreuzwerker/docker\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "attachable": false,
+            "check_duplicate": null,
+            "driver": "bridge",
+            "id": "44145a486c217577bd35ce113f5841643c2bb5c0ecfd99796fdce42b94f203c0",
+            "ingress": false,
+            "internal": false,
+            "ipam_config": [
+              {
+                "aux_address": {},
+                "gateway": "10.89.4.1",
+                "ip_range": "",
+                "subnet": "10.89.4.0/24"
+              }
+            ],
+            "ipam_driver": "default",
+            "ipam_options": {
+              "driver": "host-local"
+            },
+            "ipv6": false,
+            "labels": [],
+            "name": "backend-network",
+            "options": {},
+            "scope": "local"
+          },
+          "sensitive_attributes": [],
+          "identity_schema_version": 0,
+          "private": "eyJzY2hlbWFfdmVyc2lvbiI6IjEifQ=="
+        }
+      ]
+    },
+    {
+      "module": "module.postgres",
+      "mode": "managed",
+      "type": "docker_container",
+      "name": "postgres",
+      "provider": "provider[\"registry.terraform.io/kreuzwerker/docker\"]",
+      "instances": [
+        {
+          "schema_version": 2,
+          "attributes": {
+            "attach": false,
+            "bridge": "",
+            "capabilities": [],
+            "cgroup_parent": null,
+            "cgroupns_mode": null,
+            "command": [
+              "postgres"
+            ],
+            "container_logs": null,
+            "container_read_refresh_timeout_milliseconds": 15000,
+            "cpu_period": null,
+            "cpu_quota": null,
+            "cpu_set": "",
+            "cpu_shares": 0,
+            "cpus": null,
+            "destroy_grace_seconds": null,
+            "devices": [],
+            "dns": null,
+            "dns_opts": null,
+            "dns_search": null,
+            "domainname": "",
+            "entrypoint": [
+              "docker-entrypoint.sh"
+            ],
+            "env": [
+              "POSTGRES_DB=orders",
+              "POSTGRES_PASSWORD=ocado-dev",
+              "POSTGRES_USER=ocado"
+            ],
+            "exit_code": null,
+            "gpus": null,
+            "group_add": null,
+            "healthcheck": null,
+            "host": [],
+            "hostname": "f2aa0098c64d",
+            "id": "f2aa0098c64d85122cc06d07d84972c34a391f142d1815da706e2693bafadf3e",
+            "image": "sha256:1bea307dfb3ee30541a7acf7de14b58bcd6948da98e5d31a04c627c4d35ec64b",
+            "init": false,
+            "ipc_mode": "shareable",
+            "labels": [],
+            "log_driver": "journald",
+            "log_opts": null,
+            "logs": false,
+            "max_retry_count": 0,
+            "memory": 0,
+            "memory_reservation": 0,
+            "memory_swap": 0,
+            "mounts": [],
+            "must_run": true,
+            "name": "terraform-postgres",
+            "network_data": [
+              {
+                "gateway": "10.89.4.1",
+                "global_ipv6_address": "",
+                "global_ipv6_prefix_length": 0,
+                "ip_address": "10.89.4.3",
+                "ip_prefix_length": 24,
+                "ipv6_gateway": "",
+                "mac_address": "1a:dd:6f:2e:51:95",
+                "network_name": "backend-network"
+              }
+            ],
+            "network_mode": "bridge",
+            "networks_advanced": [],
+            "pid_mode": "private",
+            "ports": [
+              {
+                "external": 5433,
+                "internal": 5432,
+                "ip": "0.0.0.0",
+                "protocol": "tcp"
+              }
+            ],
+            "privileged": false,
+            "publish_all_ports": false,
+            "read_only": false,
+            "remove_volumes": true,
+            "restart": "no",
+            "rm": false,
+            "runtime": "oci",
+            "security_opts": [],
+            "shm_size": 62,
+            "start": true,
+            "stdin_open": false,
+            "stop_signal": "2",
+            "stop_timeout": 10,
+            "storage_opts": null,
+            "sysctls": null,
+            "tmpfs": null,
+            "tty": false,
+            "ulimit": [
+              {
+                "hard": 1048576,
+                "name": "RLIMIT_NOFILE",
+                "soft": 1048576
+              },
+              {
+                "hard": 85007,
+                "name": "RLIMIT_NPROC",
+                "soft": 85007
+              }
+            ],
+            "upload": [],
+            "user": "",
+            "userns_mode": "",
+            "volumes": [],
+            "wait": false,
+            "wait_timeout": 60,
+            "working_dir": "/"
+          },
+          "sensitive_attributes": [
+            [
+              {
+                "type": "get_attr",
+                "value": "env"
+              }
+            ]
+          ],
+          "identity_schema_version": 0,
+          "private": "eyJzY2hlbWFfdmVyc2lvbiI6IjIifQ==",
+          "dependencies": [
+            "docker_image.postgres",
+            "docker_network.backend"
+          ]
+        }
+      ]
+    }
+  ],
+  "check_results": null
+}
