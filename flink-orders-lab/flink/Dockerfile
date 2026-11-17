@@ -4,9 +4,9 @@ FROM docker.io/flink:2.2.1
 
 USER root
 
-# Runtime libraries required by the copied Python installation.
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+        curl \
         libbz2-1.0 \
         libexpat1 \
         libffi8 \
@@ -18,14 +18,16 @@ RUN apt-get update && \
         zlib1g && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy Python 3.12 from the official Python image.
 COPY --from=python /usr/local /usr/local
 
 ENV PATH="/usr/local/bin:${PATH}" \
     PYTHONUNBUFFERED=1
 
-# Install PyFlink matching the Flink distribution.
 RUN python -m pip install --no-cache-dir apache-flink==2.2.1
 
-USER flink
+# Kafka connector for Flink 2.2.x
+RUN curl -fL \
+    https://repo.maven.apache.org/maven2/org/apache/flink/flink-sql-connector-kafka/5.0.0-2.2/flink-sql-connector-kafka-5.0.0-2.2.jar \
+    -o /opt/flink/lib/flink-sql-connector-kafka-5.0.0-2.2.jar
 
+USER flink
